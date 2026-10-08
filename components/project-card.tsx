@@ -16,7 +16,7 @@ export function ProjectCard({ project, index, language }: { project: Project; in
       {!project.live && <span className="placeholder-label">{language === "vi" ? "Bản xem trước · ảnh thật sẽ được cập nhật" : "Project preview · screenshot coming soon"}</span>}
     </div>
     <div className="project-content">
-      <div className="project-top"><span>0{index + 1} / {project.year}</span><span>{language === "vi" ? "Lập trình viên Full-stack" : project.role}</span></div>
+      <div className="project-top"><span>0{index + 1} / {project.year}</span><span>{language === "vi" ? "Phụ trách phát triển Full-stack" : project.role}</span></div>
       <h3>{project.name}</h3><p>{localized.description}</p>
       <div className="tags">{project.stack.map(x => <span key={x}>{x}</span>)}</div>
       <ul>{localized.features.map(x => <li key={x}><Check size={15}/>{x}</li>)}</ul>
