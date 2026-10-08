@@ -1,39 +1,80 @@
 "use client";
-import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, Award, BriefcaseBusiness, Code2, Copy, Download, GitFork, GraduationCap, Mail, MapPin, Phone, Sparkles, Terminal, Layers3, Braces, Database, Wrench } from "lucide-react";
-import { motion, useScroll, useSpring } from "motion/react";
-import { Navbar } from "@/components/navbar";
-import { Reveal } from "@/components/reveal";
-import { SectionHeading } from "@/components/section-heading";
-import { ProjectCard } from "@/components/project-card";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useSpring, useTransform } from "motion/react";
+import { ArrowDown, ArrowUpRight, Award, Check, Copy, Download, GitFork, GraduationCap, Mail, MapPin, Moon, Phone, Sparkles, Sun } from "lucide-react";
 import { contact, projects, skillGroups } from "@/data/portfolio";
 
-const icons = [Braces, Layers3, Terminal, Database, Wrench, Code2];
-export default function Home() {
-  const { scrollYProgress } = useScroll(); const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 24 });
-  const [copied, setCopied] = useState(false); const [top, setTop] = useState(false); const [language, setLanguage] = useState<"en"|"vi">("en");
-  useEffect(() => { const saved = localStorage.getItem("hq-language") as "en"|"vi"|null; if (saved) setLanguage(saved); const onScroll = () => setTop(scrollY > 700); addEventListener("scroll", onScroll); return () => removeEventListener("scroll", onScroll); }, []);
-  useEffect(() => { document.documentElement.lang = language; localStorage.setItem("hq-language", language); }, [language]);
-  const vi = language === "vi";
-  const copyEmail = async () => { await navigator.clipboard.writeText(contact.email); setCopied(true); setTimeout(() => setCopied(false), 1800); };
-  return <><motion.div className="scroll-progress" style={{ scaleX }}/><Navbar language={language} onLanguageChange={setLanguage}/><main>
-    <section id="Home" className="hero section-shell">
-      <div className="hero-glow"/><div className="hero-grid"/>
-      <motion.div className="hero-copy" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8 }}>
-        <span className="availability"><i/>{vi ? "Đang tìm kiếm cơ hội phát triển phần mềm" : "Open to software opportunities"}</span><p className="hero-kicker">THÀNH PHỐ HỒ CHÍ MINH · VIỆT NAM</p>
-        <h1>{vi ? "Xin chào, tôi là" : "Hi, I'm"} <span>Quyen.</span></h1><div className="role"><span>{vi ? "Lập trình viên phần mềm Fresher" : "Fresher Software Developer"}</span><i/></div>
-        <p className="hero-intro">{vi ? "Tôi xây dựng các ứng dụng web hiện đại với React.js, Node.js và MongoDB, biến ý tưởng thành những trải nghiệm số hữu ích, thân thiện với người dùng." : "I build modern web applications with React.js, Node.js, and MongoDB, turning ideas into functional, user-friendly digital experiences."}</p>
-        <div className="hero-actions"><a className="button primary" href="#Projects">{vi ? "Xem các dự án" : "View my projects"}</a><a className="button ghost" href="/resume.pdf" download><Download/>{vi ? "Tải CV" : "Download CV"}</a><a className="button ghost" href={`mailto:${contact.email}`}><Mail/>{vi ? "Liên hệ" : "Contact"}</a></div>
-        <div className="social-row"><a href={contact.github} target="_blank" rel="noreferrer"><GitFork/>github.com/quyenhoang0712</a><a href={`mailto:${contact.email}`}><Mail/>{contact.email}</a></div>
-      </motion.div>
-      <div className="code-orbit" aria-hidden="true"><div className="orbit-ring ring-one"/><div className="orbit-ring ring-two"/><div className="code-card"><div className="code-head"><i/><i/><i/></div><pre><b>const</b> developer = &#123;{`\n`}  name: <em>&quot;Quyen&quot;</em>,{`\n`}  focus: <em>&quot;Full-stack&quot;</em>,{`\n`}  status: <em>&quot;Building&quot;</em>{`\n`}&#125;;</pre><span className="cursor">_</span></div><span className="float-tag tag-react">React</span><span className="float-tag tag-node">Node.js</span><span className="float-tag tag-db">MongoDB</span></div>
-      <a className="scroll-cue" href="#About"><span>{vi ? "Cuộn để khám phá" : "Scroll to explore"}</span><ArrowDown/></a>
+const nav = [
+  ["About","Giới thiệu"],["Skills","Kỹ năng"],["Experience","Kinh nghiệm"],["Projects","Dự án"],["Education","Học vấn"],["Contact","Liên hệ"]
+];
+const viProjects = [
+  "Nền tảng web full-stack với trải nghiệm cá nhân hóa, tương tác cộng đồng, xác thực người dùng và phân tích mức độ tương tác.",
+  "Nền tảng quản lý giáo dục MERN hỗ trợ giảng dạy, xếp lịch, quản lý học viên và hoạt động học tập.",
+  "Ứng dụng quản lý dự án full-stack dành cho nghiệp vụ hành chính, theo dõi trạng thái và quản lý nhà thầu."
+];
+
+export default function Home(){
+  const journey = useRef<HTMLDivElement>(null);
+  const [lang,setLang] = useState<"en"|"vi">("en");
+  const [light,setLight] = useState(false);
+  const [copied,setCopied] = useState(false);
+  const vi = lang === "vi";
+  const { scrollYProgress } = useScroll({ target: journey, offset:["start start","end end"] });
+  const smooth = useSpring(scrollYProgress,{stiffness:90,damping:24});
+  const x = useTransform(smooth,[0,1],["0%","-88.888%"]);
+  const globeRotate = useTransform(smooth,[0,1],[0,720]);
+  const progress = useSpring(scrollYProgress,{stiffness:120,damping:28});
+
+  useEffect(()=>{ const l=localStorage.getItem("hq-language") as "en"|"vi"|null; const isLight=localStorage.getItem("hq-theme")==="light"; if(l)setLang(l); setLight(isLight); document.documentElement.dataset.theme=isLight?"light":"dark"; },[]);
+  useEffect(()=>{document.documentElement.lang=lang;localStorage.setItem("hq-language",lang)},[lang]);
+  const toggleTheme=()=>{const n=!light;setLight(n);document.documentElement.dataset.theme=n?"light":"dark";localStorage.setItem("hq-theme",n?"light":"dark")};
+  const begin=()=>journey.current?.scrollIntoView({behavior:"smooth"});
+  const go=(index:number)=>{if(!journey.current)return;const start=journey.current.offsetTop;const distance=journey.current.offsetHeight-innerHeight;scrollTo({top:start+(index/8)*distance,behavior:"smooth"})};
+  const copy=async()=>{await navigator.clipboard.writeText(contact.email);setCopied(true);setTimeout(()=>setCopied(false),1600)};
+
+  return <main className="orbit-site">
+    <section className="portal">
+      <div className="star-field"/><div className="portal-copy"><span>HQ / PORTFOLIO 2026</span><h1>{vi?"Khám phá thế giới":"Explore the world of"}<strong> Quyen.</strong></h1><p>{vi?"Một hành trình qua các kỹ năng, trải nghiệm và sản phẩm tôi đã xây dựng.":"A journey through the skills, experience, and products I have built."}</p><button onClick={begin}>{vi?"Bắt đầu tìm hiểu":"Start exploring"}<ArrowDown/></button></div>
+      <div className="hero-planet" aria-hidden="true"><div className="planet-grid"/><span className="orbit o1"/><span className="orbit o2"/><i className="satellite"/></div>
+      <div className="portal-controls"><button onClick={()=>setLang(vi?"en":"vi")}>{vi?"EN":"VI"}</button><button onClick={toggleTheme}>{light?<Moon/>:<Sun/>}</button></div>
     </section>
-    <section id="About" className="section-shell content-section"><Reveal><SectionHeading eyebrow={vi ? "01 / GIỚI THIỆU" : "01 / ABOUT"} title={vi ? "Biến ý tưởng thành phần mềm đáng tin cậy." : "Turning ideas into reliable software."}/></Reveal><div className="about-grid"><Reveal className="about-copy"><p>{vi ? "Tôi là một lập trình viên phần mềm có kinh nghiệm thực tế trong việc xây dựng các ứng dụng web full-stack. Tôi yêu thích việc tạo giao diện responsive, tích hợp RESTful API và giải quyết các vấn đề thực tế bằng phần mềm." : "I'm a software developer with hands-on experience building full-stack web applications. I enjoy developing responsive interfaces, integrating RESTful APIs, and solving real-world problems through software."}</p><p>{vi ? "Nền tảng kỹ thuật của tôi gồm React.js, Node.js, Express.js và MongoDB. Tôi đang không ngừng nâng cao kỹ năng kỹ thuật và tìm kiếm cơ hội phát triển thành một lập trình viên chuyên nghiệp." : "My technical background includes React.js, Node.js, Express.js, and MongoDB. I'm actively improving my engineering skills and looking for opportunities to grow as a professional software developer."}</p></Reveal><div className="highlights">{(vi ? [[BriefcaseBusiness,"Thực tập Frontend","Kinh nghiệm làm việc trong đội ngũ Patecan"],[Layers3,"Phát triển Full-stack","Xây dựng sản phẩm từ giao diện đến cơ sở dữ liệu"],[Terminal,"Tích hợp API","Dữ liệu động qua các dịch vụ RESTful"]] : [[BriefcaseBusiness,"Frontend internship","Real team experience at Patecan"],[Layers3,"Full-stack development","Products built from interface to database"],[Terminal,"API integration","Dynamic data through RESTful services"]]).map(([Icon,title,desc],i) => <Reveal key={title as string} delay={i*.08}><div className="highlight"><Icon/><div><h3>{title as string}</h3><p>{desc as string}</p></div><span>0{i+1}</span></div></Reveal>)}</div></div></section>
-    <section id="Skills" className="section-shell content-section"><Reveal><SectionHeading eyebrow={vi ? "02 / CÔNG CỤ" : "02 / TOOLKIT"} title={vi ? "Những công nghệ tôi sử dụng." : "Technologies I work with."} copy={vi ? "Bộ kỹ năng thực tiễn được xây dựng qua chương trình học, kỳ thực tập và các dự án hoàn chỉnh." : "A practical toolkit built through coursework, internship experience, and end-to-end projects."}/></Reveal><div className="skills-grid">{skillGroups.map((group,i) => { const Icon=icons[i]; const titles=["Ngôn ngữ","Frontend","Backend","Cơ sở dữ liệu","Công cụ phát triển","Kiến thức nền tảng"]; return <Reveal key={group.title} delay={(i%3)*.06}><article className="skill-card"><div className="skill-icon"><Icon/></div><h3>{vi ? titles[i] : group.title}</h3><div>{group.skills.map(x=><span key={x}>{x}</span>)}</div></article></Reveal>})}</div></section>
-    <section id="Experience" className="section-shell content-section"><Reveal><SectionHeading eyebrow={vi ? "03 / KINH NGHIỆM" : "03 / EXPERIENCE"} title={vi ? "Học hỏi trong một đội ngũ sản phẩm thực tế." : "Learning in a real product team."}/></Reveal><Reveal><article className="experience-card"><div className="experience-meta"><span>{vi ? "THÁNG 4 — 6/2025" : "APR — JUN 2025"}</span><i/></div><div><span className="company">PATECAN</span><h3>{vi ? "Thực tập sinh Frontend Developer" : "Frontend Developer Intern"}</h3><p>{vi ? "Tham gia phát triển sản phẩm hiện có bằng React.js và phối hợp tích hợp các API từ đội ngũ backend." : "Contributed to existing products with React.js and collaborated around backend-provided APIs."}</p><ul>{(vi ? ["Phát triển các tính năng frontend bằng React.js.","Tích hợp RESTful API do đội ngũ backend cung cấp.","Bảo trì và cải thiện giao diện người dùng hiện có.","Xử lý phản hồi API và hiển thị dữ liệu động.","Cập nhật các React component tái sử dụng để hỗ trợ tính năng mới."] : ["Developed frontend features using React.js.","Integrated RESTful APIs provided by the backend development team.","Maintained and improved existing user interfaces.","Handled API responses and displayed dynamic data.","Updated reusable React components to support additional functionality."]).map(x=><li key={x}>{x}</li>)}</ul></div></article></Reveal></section>
-    <section id="Projects" className="section-shell content-section projects-section"><Reveal><SectionHeading eyebrow={vi ? "04 / DỰ ÁN NỔI BẬT" : "04 / SELECTED WORK"} title={vi ? "Những sản phẩm vượt ra ngoài bài hướng dẫn." : "Products built beyond the tutorial."} copy={vi ? "Ba hệ thống full-stack tập trung vào cộng đồng, giáo dục và quản lý dự án." : "Three full-stack systems that explore community, education, and project operations."}/></Reveal><div className="projects-list">{projects.map((p,i)=><Reveal key={p.name}><ProjectCard project={p} index={i} language={language}/></Reveal>)}</div></section>
-    <section id="Education" className="section-shell content-section"><Reveal><SectionHeading eyebrow={vi ? "05 / HỌC VẤN" : "05 / EDUCATION"} title={vi ? "Xây dựng nền tảng vững chắc." : "Building a strong foundation."}/></Reveal><div className="education-grid"><Reveal><article className="education-card"><GraduationCap/><div><span>{vi ? "2021 — HIỆN TẠI · DỰ KIẾN 2027" : "2021 — PRESENT · EXPECTED 2027"}</span><h3>Computing</h3><h4>Greenwich Vietnam</h4><p>{vi ? "Đã hoàn thành các học phần về phát triển phần mềm và công nghệ thông tin, đồng thời có kinh nghiệm thực tế qua các ứng dụng web học thuật và cá nhân." : "Completed software development and information technology coursework, with practical experience developing academic and personal web applications."}</p></div></article></Reveal><Reveal delay={.1}><article className="cert-card"><Award/><div><span>{vi ? "CHỨNG CHỈ" : "CERTIFICATION"}</span><h3>APTIS ESOL</h3><p>{vi ? "Trình độ tiếng Anh CEFR B2" : "CEFR B2 English Proficiency"}</p></div></article></Reveal></div></section>
-    <section id="Contact" className="section-shell contact-section"><Reveal><div className="contact-panel"><span className="contact-label"><Sparkles/>{vi ? "Sẵn sàng cho cơ hội mới" : "Available for new opportunities"}</span><h2>{vi ? "Hãy cùng nhau tạo nên" : "Let's build something"} <span>{vi ? "điều tuyệt vời." : "together."}</span></h2><p>{vi ? "Tôi đang tìm kiếm cơ hội ở vị trí Fresher Software Developer, Frontend Developer hoặc Full-stack Developer." : "I'm open to Fresher Software Developer, Frontend Developer, and Full-stack Developer opportunities."}</p><div className="contact-actions"><a className="button primary" href={`mailto:${contact.email}`}><Mail/>{vi ? "Gửi email" : "Email me"}</a><a className="button ghost" href={contact.github} target="_blank" rel="noreferrer"><GitFork/>GitHub</a></div><div className="contact-details"><span><MapPin/>{vi ? "Thành phố Hồ Chí Minh, Việt Nam" : contact.location}</span><a href={`tel:${contact.phone}`}><Phone/>{contact.phone}</a><button onClick={copyEmail}><Copy/>{copied ? (vi ? "Đã sao chép email!" : "Email copied!") : contact.email}</button></div></div></Reveal></section>
-  </main><footer><div><a className="logo" href="#Home">HQ<span>.</span></a><p>© 2026 Hoang Quang Quyen. {vi ? "Xây dựng bằng React." : "Built with React."}</p><a href={contact.github} target="_blank" rel="noreferrer"><GitFork/>GitHub</a></div></footer>{top && <button className="back-top" onClick={()=>scrollTo({top:0,behavior:"smooth"})} aria-label={vi ? "Về đầu trang" : "Back to top"}><ArrowUp/></button>}</>;
+
+    <section ref={journey} className="journey">
+      <div className="journey-sticky">
+        <motion.div className="journey-progress" style={{scaleX:progress}}/>
+        <header className="orbit-nav"><a onClick={()=>scrollTo({top:0,behavior:"smooth"})} className="logo">HQ<span>.</span></a><nav>{nav.map((n,i)=><button key={n[0]} onClick={()=>go(i)}>{vi?n[1]:n[0]}</button>)}</nav><div><button onClick={()=>setLang(vi?"en":"vi")}>{vi?"EN":"VI"}</button><button onClick={toggleTheme}>{light?<Moon/>:<Sun/>}</button><a href="/resume.pdf" download><Download/>CV</a></div></header>
+        <motion.div className="journey-globe" style={{rotate:globeRotate}} aria-hidden="true"><div/><i/><b/></motion.div>
+        <motion.div className="panel-track" style={{x}}>
+          <article className="orbit-panel intro-panel">
+            <div className="panel-index">00</div><div className="panel-copy"><span className="eyebrow">{vi?"BẮT ĐẦU HÀNH TRÌNH":"BEGIN THE JOURNEY"}</span><h2>{vi?"Xin chào, tôi là":"Hi, I'm"} <em>Quyen.</em></h2><h3>{vi?"Lập trình viên phần mềm Fresher":"Fresher Software Developer"}</h3><p>{vi?"Tôi xây dựng ứng dụng web hiện đại với React.js, Node.js và MongoDB, biến ý tưởng thành những trải nghiệm số hữu ích và thân thiện.":"I build modern web applications with React.js, Node.js, and MongoDB, turning ideas into functional, user-friendly digital experiences."}</p><div className="panel-actions"><button onClick={()=>go(1)}>{vi?"Tiếp tục khám phá":"Keep exploring"}<ArrowUpRight/></button><a href="/resume.pdf" download><Download/>{vi?"Tải CV":"Download CV"}</a></div></div>
+          </article>
+
+          <article id="About" className="orbit-panel">
+            <div className="panel-index">01</div><div className="panel-copy wide"><span className="eyebrow">{vi?"GIỚI THIỆU":"ABOUT"}</span><h2>{vi?"Biến ý tưởng thành phần mềm đáng tin cậy.":"Turning ideas into reliable software."}</h2><div className="two-col"><p>{vi?"Tôi là một lập trình viên phần mềm có kinh nghiệm thực tế trong việc xây dựng các ứng dụng web full-stack. Tôi yêu thích việc tạo giao diện responsive, tích hợp RESTful API và giải quyết các vấn đề thực tế bằng phần mềm.":"I'm a software developer with hands-on experience building full-stack web applications. I enjoy developing responsive interfaces, integrating RESTful APIs, and solving real-world problems through software."}</p><p>{vi?"Nền tảng kỹ thuật của tôi gồm React.js, Node.js, Express.js và MongoDB. Tôi đang không ngừng nâng cao kỹ năng và tìm kiếm cơ hội phát triển chuyên nghiệp.":"My technical background includes React.js, Node.js, Express.js, and MongoDB. I'm actively improving my engineering skills and looking for opportunities to grow professionally."}</p></div></div>
+          </article>
+
+          <article id="Skills" className="orbit-panel skills-panel">
+            <div className="panel-index">02</div><div className="panel-copy wide"><span className="eyebrow">{vi?"BỘ CÔNG CỤ":"TOOLKIT"}</span><h2>{vi?"Công nghệ tôi sử dụng.":"Technologies I work with."}</h2><div className="orbit-skills">{skillGroups.map((g,i)=><div key={g.title}><b>{vi?["Ngôn ngữ","Frontend","Backend","Cơ sở dữ liệu","Công cụ","Kiến thức"][i]:g.title}</b>{g.skills.map(s=><span key={s}>{s}</span>)}</div>)}</div></div>
+          </article>
+
+          <article id="Experience" className="orbit-panel">
+            <div className="panel-index">03</div><div className="panel-copy wide"><span className="eyebrow">{vi?"KINH NGHIỆM":"EXPERIENCE"}</span><h2>Patecan</h2><div className="experience-orbit"><div><span>{vi?"04 — 06/2025":"APR — JUN 2025"}</span><h3>{vi?"Thực tập sinh Frontend Developer":"Frontend Developer Intern"}</h3><p>{vi?"Phát triển tính năng React.js, tích hợp RESTful API, xử lý dữ liệu động và cải thiện các component tái sử dụng.":"Developed React.js features, integrated RESTful APIs, handled dynamic data, and improved reusable components."}</p></div><ul>{(vi?["Phát triển giao diện","Tích hợp API","Component tái sử dụng","Xử lý dữ liệu động"]:["Interface development","API integration","Reusable components","Dynamic data handling"]).map(x=><li key={x}><Check/>{x}</li>)}</ul></div></div>
+          </article>
+
+          {projects.map((p,i)=><article key={p.name} id={i===0?"Projects":undefined} className="orbit-panel project-orbit-panel">
+            <div className="panel-index">0{i+4}</div><div className="project-orbit-visual"><span>{p.year}</span><div className="mini-window"><i/><i/><i/><b>{p.name.slice(0,2)}</b></div></div><div className="panel-copy project-orbit-copy"><span className="eyebrow">{vi?"DỰ ÁN NỔI BẬT":"FEATURED PROJECT"} · 0{i+1}</span><h2>{p.name}</h2><p>{vi?viProjects[i]:p.description}</p><div className="orbit-tags">{p.stack.map(s=><span key={s}>{s}</span>)}</div><div className="panel-actions"><a href={p.github} target="_blank" rel="noreferrer"><GitFork/>GitHub</a>{p.live&&<a href={p.live} target="_blank" rel="noreferrer">{vi?"Xem trực tiếp":"Live site"}<ArrowUpRight/></a>}</div></div>
+          </article>)}
+
+          <article id="Education" className="orbit-panel">
+            <div className="panel-index">07</div><div className="panel-copy wide"><span className="eyebrow">{vi?"HỌC VẤN":"EDUCATION"}</span><h2>{vi?"Xây dựng nền tảng vững chắc.":"Building a strong foundation."}</h2><div className="edu-orbit"><div><GraduationCap/><span>2021 — {vi?"HIỆN TẠI · DỰ KIẾN 2027":"PRESENT · EXPECTED 2027"}</span><h3>Computing</h3><p>Greenwich Vietnam</p></div><div><Award/><span>{vi?"CHỨNG CHỈ":"CERTIFICATION"}</span><h3>APTIS ESOL</h3><p>{vi?"Trình độ tiếng Anh CEFR B2":"CEFR B2 English Proficiency"}</p></div></div></div>
+          </article>
+
+          <article id="Contact" className="orbit-panel contact-orbit">
+            <div className="panel-index">08</div><div className="panel-copy"><span className="eyebrow"><Sparkles/>{vi?"SẴN SÀNG CHO CƠ HỘI MỚI":"OPEN TO OPPORTUNITIES"}</span><h2>{vi?"Hãy cùng nhau tạo nên điều tuyệt vời.":"Let's build something together."}</h2><p>{vi?"Tôi đang tìm kiếm cơ hội Fresher Software Developer, Frontend Developer hoặc Full-stack Developer.":"I'm open to Fresher Software Developer, Frontend Developer, and Full-stack Developer opportunities."}</p><div className="panel-actions"><a href={`mailto:${contact.email}`}><Mail/>{vi?"Gửi email":"Email me"}</a><a href={contact.github} target="_blank" rel="noreferrer"><GitFork/>GitHub</a></div><div className="orbit-contact"><span><MapPin/>{vi?"TP. Hồ Chí Minh, Việt Nam":contact.location}</span><a href={`tel:${contact.phone}`}><Phone/>{contact.phone}</a><button onClick={copy}><Copy/>{copied?(vi?"Đã sao chép!":"Copied!"):contact.email}</button></div></div>
+          </article>
+        </motion.div>
+        <div className="journey-hint"><span>{vi?"CUỘN ĐỂ XOAY":"SCROLL TO ORBIT"}</span><i/></div>
+      </div>
+    </section>
+  </main>
 }
