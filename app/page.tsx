@@ -16,6 +16,8 @@ const viProjects = [
 export default function Home(){
   const journey = useRef<HTMLDivElement>(null);
   const [lang,setLang] = useState<"en"|"vi">("en");
+  const [languageChosen,setLanguageChosen] = useState(false);
+  const [launching,setLaunching] = useState(false);
   const [light,setLight] = useState(false);
   const [copied,setCopied] = useState(false);
   const vi = lang === "vi";
@@ -25,18 +27,19 @@ export default function Home(){
   const globeRotate = useTransform(smooth,[0,1],[0,720]);
   const progress = useSpring(scrollYProgress,{stiffness:120,damping:28});
 
-  useEffect(()=>{ const l=localStorage.getItem("hq-language") as "en"|"vi"|null; const isLight=localStorage.getItem("hq-theme")==="light"; if(l)setLang(l); setLight(isLight); document.documentElement.dataset.theme=isLight?"light":"dark"; },[]);
+  useEffect(()=>{ const isLight=localStorage.getItem("hq-theme")==="light"; setLight(isLight); document.documentElement.dataset.theme=isLight?"light":"dark"; },[]);
   useEffect(()=>{document.documentElement.lang=lang;localStorage.setItem("hq-language",lang)},[lang]);
   const toggleTheme=()=>{const n=!light;setLight(n);document.documentElement.dataset.theme=n?"light":"dark";localStorage.setItem("hq-theme",n?"light":"dark")};
-  const begin=()=>journey.current?.scrollIntoView({behavior:"smooth"});
+  const chooseLanguage=(value:"en"|"vi")=>{setLang(value);setLanguageChosen(true)};
+  const begin=()=>{setLaunching(true);setTimeout(()=>journey.current?.scrollIntoView({behavior:"smooth"}),620);setTimeout(()=>setLaunching(false),1500)};
   const go=(index:number)=>{if(!journey.current)return;const start=journey.current.offsetTop;const distance=journey.current.offsetHeight-innerHeight;scrollTo({top:start+(index/8)*distance,behavior:"smooth"})};
   const copy=async()=>{await navigator.clipboard.writeText(contact.email);setCopied(true);setTimeout(()=>setCopied(false),1600)};
 
   return <main className="orbit-site">
-    <section className="portal">
-      <div className="star-field"/><div className="portal-copy"><span>HQ / PORTFOLIO 2026</span><h1>{vi?"Khám phá thế giới":"Explore the world of"}<strong> Quyen.</strong></h1><p>{vi?"Một hành trình qua các kỹ năng, trải nghiệm và sản phẩm tôi đã xây dựng.":"A journey through the skills, experience, and products I have built."}</p><button onClick={begin}>{vi?"Bắt đầu tìm hiểu":"Start exploring"}<ArrowDown/></button></div>
+    <section className={`portal ${launching?"launching":""}`}>
+      <div className="star-field"/><div className="portal-copy"><span>HQ / PORTFOLIO 2026</span>{!languageChosen?<><h1 className="language-title">Choose your language.<strong> Chọn ngôn ngữ.</strong></h1><p>Select a language to begin your journey.<br/>Chọn ngôn ngữ để bắt đầu hành trình.</p><div className="language-choice"><button onClick={()=>chooseLanguage("en")}><b>EN</b><span>English</span></button><button onClick={()=>chooseLanguage("vi")}><b>VI</b><span>Tiếng Việt</span></button></div></>:<><h1>{vi?"Khám phá thế giới":"Explore the world of"}<strong> Quyen.</strong></h1><p>{vi?"Một hành trình qua các kỹ năng, trải nghiệm và sản phẩm tôi đã xây dựng.":"A journey through the skills, experience, and products I have built."}</p><button className="start-journey" onClick={begin}>{vi?"Bắt đầu khám phá":"Start exploring"}<ArrowDown/></button><button className="change-language" onClick={()=>setLanguageChosen(false)}>{vi?"Chọn lại ngôn ngữ":"Change language"}</button></>}</div>
       <div className="hero-planet" aria-hidden="true"><div className="planet-grid"/><span className="orbit o1"/><span className="orbit o2"/><i className="satellite"/></div>
-      <div className="portal-controls"><button onClick={()=>setLang(vi?"en":"vi")}>{vi?"EN":"VI"}</button><button onClick={toggleTheme}>{light?<Moon/>:<Sun/>}</button></div>
+      <div className="portal-controls"><button onClick={toggleTheme}>{light?<Moon/>:<Sun/>}</button></div>
     </section>
 
     <section ref={journey} className="journey">
