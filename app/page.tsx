@@ -38,7 +38,11 @@ export default function Home(){
   return <main className="orbit-site">
     <section className={`portal ${languageChosen?"ready":""} ${launching?"launching":""}`}>
       <div className="star-field"/><div className="portal-copy"><span>HQ / PORTFOLIO 2026</span>{!languageChosen?<><h1 className="language-title">Choose your language.<strong> Chọn ngôn ngữ.</strong></h1><p>Select a language to begin your journey.<br/>Hãy chọn ngôn ngữ bạn muốn sử dụng.</p><div className="language-choice"><button onClick={()=>chooseLanguage("en")}><b>EN</b><span>English</span></button><button onClick={()=>chooseLanguage("vi")}><b>VI</b><span>Tiếng Việt</span></button></div></>:<><h1>{vi?"Khám phá Portfolio của":"Explore"}<strong> {vi?"Quyền.":"Quyen's Portfolio."}</strong></h1><p>{vi?"Nơi tôi chia sẻ những kỹ năng, kinh nghiệm và các sản phẩm phần mềm đã thực hiện trong hành trình trở thành lập trình viên chuyên nghiệp.":"Discover the skills, experience, and software projects behind my journey as a developer."}</p><button className="start-journey" onClick={begin}>{vi?"Khám phá Portfolio":"Explore Portfolio"}<ArrowDown/></button><button className="change-language" onClick={()=>setLanguageChosen(false)}>{vi?"Đổi ngôn ngữ":"Change language"}</button></>}</div>
-      <div className="hero-planet" aria-hidden="true"><div className="planet-grid"/><span className="orbit o1"/><span className="orbit o2"/><i className="satellite"/></div>
+      <div className="software-core" aria-hidden="true">
+        <div className="core-grid"/><span className="core-line line-a"/><span className="core-line line-b"/><span className="core-line line-c"/><span className="core-line line-d"/>
+        <div className="code-console"><div className="console-top"><i/><i/><i/><span>portfolio.tsx</span></div><pre><b>const</b> developer = &#123;{`\n`}  name: <em>&quot;Quyen&quot;</em>,{`\n`}  stack: <em>[&quot;React&quot;, &quot;Node&quot;]</em>,{`\n`}  ready: <strong>true</strong>{`\n`}&#125;;</pre><div className="console-status"><i/> system ready</div></div>
+        <span className="core-node node-react">React</span><span className="core-node node-api">REST API</span><span className="core-node node-node">Node.js</span><span className="core-node node-db">MongoDB</span>
+      </div>
       <div className="portal-controls"><button onClick={toggleTheme}>{light?<Moon/>:<Sun/>}</button></div>
     </section>
 
@@ -46,7 +50,7 @@ export default function Home(){
       <div className="journey-sticky">
         <motion.div className="journey-progress" style={{scaleX:progress}}/>
         <header className="orbit-nav"><a onClick={()=>scrollTo({top:0,behavior:"smooth"})} className="logo">HQ<span>.</span></a><nav>{nav.map((n,i)=><button key={n[0]} onClick={()=>go(i)}>{vi?n[1]:n[0]}</button>)}</nav><div><button onClick={()=>setLang(vi?"en":"vi")}>{vi?"EN":"VI"}</button><button onClick={toggleTheme}>{light?<Moon/>:<Sun/>}</button><a href="/resume.pdf" download><Download/>CV</a></div></header>
-        <motion.div className="journey-globe" style={{rotate:globeRotate}} aria-hidden="true"><div/><i/><b/></motion.div>
+        <motion.div className="journey-core" style={{rotate:globeRotate}} aria-hidden="true"><span>&#123; &#125;</span><i/><b/><em/></motion.div>
         <motion.div className="panel-track" style={{x}}>
           <article className="orbit-panel intro-panel">
             <div className="panel-index">00</div><div className="panel-copy"><span className="eyebrow">{vi?"BẮT ĐẦU HÀNH TRÌNH":"BEGIN THE JOURNEY"}</span><h2>{vi?"Xin chào, tôi là":"Hi, I'm"} <em>Quyen.</em></h2><h3>{vi?"Lập trình viên phần mềm mới vào nghề":"Fresher Software Developer"}</h3><p>{vi?"Tôi phát triển các ứng dụng web bằng React.js, Node.js và MongoDB, chú trọng vào trải nghiệm người dùng, tính ổn định và khả năng ứng dụng thực tế.":"I build modern web applications with React.js, Node.js, and MongoDB, turning ideas into functional, user-friendly digital experiences."}</p><div className="panel-actions"><button onClick={()=>go(1)}>{vi?"Xem thêm về tôi":"Keep exploring"}<ArrowUpRight/></button><a href="/resume.pdf" download><Download/>{vi?"Tải CV":"Download CV"}</a></div></div>
