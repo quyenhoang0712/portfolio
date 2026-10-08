@@ -15,6 +15,7 @@ const viProjects = [
 
 export default function Home(){
   const journey = useRef<HTMLDivElement>(null);
+  const snapLock = useRef(false);
   const [lang,setLang] = useState<"en"|"vi">("en");
   const [languageChosen,setLanguageChosen] = useState(false);
   const [launching,setLaunching] = useState(false);
@@ -22,7 +23,7 @@ export default function Home(){
   const [copied,setCopied] = useState(false);
   const vi = lang === "vi";
   const { scrollYProgress } = useScroll({ target: journey, offset:["start start","end end"] });
-  const smooth = useSpring(scrollYProgress,{stiffness:90,damping:24});
+  const smooth = useSpring(scrollYProgress,{stiffness:190,damping:38,mass:.55});
   const x = useTransform(smooth,[0,1],["0%","-88.888%"]);
   const globeRotate = useTransform(smooth,[0,1],[0,720]);
   const progress = useSpring(scrollYProgress,{stiffness:120,damping:28});
@@ -33,6 +34,23 @@ export default function Home(){
   const chooseLanguage=(value:"en"|"vi")=>{setLang(value);setLanguageChosen(true)};
   const begin=()=>{setLaunching(true);setTimeout(()=>journey.current?.scrollIntoView({behavior:"smooth"}),620);setTimeout(()=>setLaunching(false),1500)};
   const go=(index:number)=>{if(!journey.current)return;const start=journey.current.offsetTop;const distance=journey.current.offsetHeight-innerHeight;scrollTo({top:start+(index/8)*distance,behavior:"smooth"})};
+  useEffect(()=>{
+    const onWheel=(event:WheelEvent)=>{
+      if(innerWidth<=800||!journey.current||Math.abs(event.deltaY)<12)return;
+      const start=journey.current.offsetTop;
+      const end=start+journey.current.offsetHeight-innerHeight;
+      if(scrollY<start-2||scrollY>end+2)return;
+      const current=Math.round(((scrollY-start)/(end-start))*8);
+      if((current===0&&event.deltaY<0)||(current===8&&event.deltaY>0))return;
+      event.preventDefault();
+      if(snapLock.current)return;
+      snapLock.current=true;
+      go(Math.max(0,Math.min(8,current+(event.deltaY>0?1:-1))));
+      setTimeout(()=>{snapLock.current=false},720);
+    };
+    addEventListener("wheel",onWheel,{passive:false});
+    return()=>removeEventListener("wheel",onWheel);
+  },[]);
   const copy=async()=>{await navigator.clipboard.writeText(contact.email);setCopied(true);setTimeout(()=>setCopied(false),1600)};
 
   return <main className="orbit-site">
@@ -80,7 +98,7 @@ export default function Home(){
             <div className="panel-index">08</div><div className="panel-copy"><span className="eyebrow"><Sparkles/>{vi?"SẴN SÀNG ĐÓN NHẬN CƠ HỘI MỚI":"OPEN TO OPPORTUNITIES"}</span><h2>{vi?"Cùng nhau tạo nên một sản phẩm đáng giá.":"Let's build something together."}</h2><p>{vi?"Tôi đang tìm kiếm cơ hội ở vị trí lập trình viên phần mềm mới vào nghề, lập trình viên frontend hoặc full-stack. Nếu bạn thấy tôi phù hợp với đội ngũ của mình, hãy liên hệ với tôi.":"I'm open to Fresher Software Developer, Frontend Developer, and Full-stack Developer opportunities."}</p><div className="panel-actions"><a href={`mailto:${contact.email}`}><Mail/>{vi?"Liên hệ qua email":"Email me"}</a><a href={contact.github} target="_blank" rel="noreferrer"><GitFork/>GitHub</a></div><div className="orbit-contact"><span><MapPin/>{vi?"Thành phố Hồ Chí Minh, Việt Nam":contact.location}</span><a href={`tel:${contact.phone}`}><Phone/>{contact.phone}</a><button onClick={copy}><Copy/>{copied?(vi?"Đã sao chép địa chỉ email":"Copied!"):contact.email}</button></div></div>
           </article>
         </motion.div>
-        <div className="journey-hint"><span>{vi?"CUỘN ĐỂ KHÁM PHÁ":"SCROLL TO ORBIT"}</span><i/></div>
+        <div className="journey-hint"><span>{vi?"CUỘN TỪNG BƯỚC ĐỂ KHÁM PHÁ":"SCROLL ONE STEP AT A TIME"}</span><i/></div>
       </div>
     </section>
   </main>
