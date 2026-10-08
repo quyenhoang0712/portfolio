@@ -27,7 +27,7 @@ export default function Home(){
   const globeRotate = useTransform(smooth,[0,1],[0,720]);
   const progress = useSpring(scrollYProgress,{stiffness:120,damping:28});
 
-  useEffect(()=>{ const isLight=localStorage.getItem("hq-theme")==="light"; setLight(isLight); document.documentElement.dataset.theme=isLight?"light":"dark"; },[]);
+  useEffect(()=>{ const isLight=localStorage.getItem("hq-theme")==="light"; setLight(isLight); document.documentElement.dataset.theme=isLight?"light":"dark"; if(location.hash) history.replaceState(null,"",location.pathname+location.search); scrollTo(0,0); },[]);
   useEffect(()=>{document.documentElement.lang=lang;localStorage.setItem("hq-language",lang)},[lang]);
   const toggleTheme=()=>{const n=!light;setLight(n);document.documentElement.dataset.theme=n?"light":"dark";localStorage.setItem("hq-theme",n?"light":"dark")};
   const chooseLanguage=(value:"en"|"vi")=>{setLang(value);setLanguageChosen(true)};
