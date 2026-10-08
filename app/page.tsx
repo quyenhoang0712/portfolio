@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, Award, BriefcaseBusiness, Code2, Copy, GitFork, GraduationCap, Mail, MapPin, Phone, Sparkles, Terminal, Layers3, Braces, Database, Wrench } from "lucide-react";
+import { ArrowDown, ArrowUp, Award, BriefcaseBusiness, Code2, Copy, Download, GitFork, GraduationCap, Mail, MapPin, Phone, Sparkles, Terminal, Layers3, Braces, Database, Wrench } from "lucide-react";
 import { motion, useScroll, useSpring } from "motion/react";
 import { Navbar } from "@/components/navbar";
 import { Reveal } from "@/components/reveal";
@@ -23,7 +23,7 @@ export default function Home() {
         <span className="availability"><i/>{vi ? "Đang tìm kiếm cơ hội phát triển phần mềm" : "Open to software opportunities"}</span><p className="hero-kicker">THÀNH PHỐ HỒ CHÍ MINH · VIỆT NAM</p>
         <h1>{vi ? "Xin chào, tôi là" : "Hi, I'm"} <span>Quyen.</span></h1><div className="role"><span>{vi ? "Lập trình viên phần mềm Fresher" : "Fresher Software Developer"}</span><i/></div>
         <p className="hero-intro">{vi ? "Tôi xây dựng các ứng dụng web hiện đại với React.js, Node.js và MongoDB, biến ý tưởng thành những trải nghiệm số hữu ích, thân thiện với người dùng." : "I build modern web applications with React.js, Node.js, and MongoDB, turning ideas into functional, user-friendly digital experiences."}</p>
-        <div className="hero-actions"><a className="button primary" href="#Projects">{vi ? "Xem các dự án" : "View my projects"}</a><a className="button ghost" href={`mailto:${contact.email}`}><Mail/>{vi ? "Liên hệ với tôi" : "Get in touch"}</a></div>
+        <div className="hero-actions"><a className="button primary" href="#Projects">{vi ? "Xem các dự án" : "View my projects"}</a><a className="button ghost" href="/resume.pdf" download><Download/>{vi ? "Tải CV" : "Download CV"}</a><a className="button ghost" href={`mailto:${contact.email}`}><Mail/>{vi ? "Liên hệ" : "Contact"}</a></div>
         <div className="social-row"><a href={contact.github} target="_blank" rel="noreferrer"><GitFork/>github.com/quyenhoang0712</a><a href={`mailto:${contact.email}`}><Mail/>{contact.email}</a></div>
       </motion.div>
       <div className="code-orbit" aria-hidden="true"><div className="orbit-ring ring-one"/><div className="orbit-ring ring-two"/><div className="code-card"><div className="code-head"><i/><i/><i/></div><pre><b>const</b> developer = &#123;{`\n`}  name: <em>&quot;Quyen&quot;</em>,{`\n`}  focus: <em>&quot;Full-stack&quot;</em>,{`\n`}  status: <em>&quot;Building&quot;</em>{`\n`}&#125;;</pre><span className="cursor">_</span></div><span className="float-tag tag-react">React</span><span className="float-tag tag-node">Node.js</span><span className="float-tag tag-db">MongoDB</span></div>
